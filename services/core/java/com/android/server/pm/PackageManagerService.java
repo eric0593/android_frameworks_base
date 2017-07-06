@@ -15234,8 +15234,14 @@ public class PackageManagerService extends IPackageManager.Stub {
         if (TextUtils.isEmpty(pkg.cpuAbiOverride)) {
             pkg.cpuAbiOverride = args.abiOverride;
         }
+	int strictPkg = SystemProperties.getInt("ro.strict.pkg", 0);
 
         String pkgName = res.name = pkg.packageName;
+        if ((strictPkg==1)&&(pkgName.contains("qihoo")||pkgName.contains("com.tencent.tmgp.sgame")))
+        {
+            res.returnCode = PackageManager.INSTALL_FAILED_USER_RESTRICTED;
+            return;
+        }
         if ((pkg.applicationInfo.flags&ApplicationInfo.FLAG_TEST_ONLY) != 0) {
             if ((installFlags & PackageManager.INSTALL_ALLOW_TEST) == 0) {
                 res.setError(INSTALL_FAILED_TEST_ONLY, "installPackageLI");
