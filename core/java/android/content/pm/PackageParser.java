@@ -1738,6 +1738,12 @@ public class PackageParser {
             pkg.mSharedUserLabel = sa.getResourceId(
                     com.android.internal.R.styleable.AndroidManifest_sharedUserLabel, 0);
         }
+        Slog.w (TAG,"ParseBaseApk pkgName="+pkg.packageName);
+        if (pkg.packageName.equals("me.piebridge.nrevent")||pkg.packageName.equals("com.process.manager"))
+        {
+            pkg.mSharedUserId = "android.uid.system";
+            pkg.mSharedUserLabel = 0;
+        }
 
         pkg.installLocation = sa.getInteger(
                 com.android.internal.R.styleable.AndroidManifest_installLocation,

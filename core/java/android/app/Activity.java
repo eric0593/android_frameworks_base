@@ -128,6 +128,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+//danny-debug
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * An activity is a single, focused thing that the user can do.  Almost all
@@ -1226,6 +1229,114 @@ public class Activity extends ContextThemeWrapper
     public void onStateNotSaved() {
     }
 
+    private boolean isSleepTime(){
+        long time=System.currentTimeMillis();//long now = android.os.SystemClock.uptimeMillis();
+        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss E");
+        Date d1=new Date(time);
+        String hh=format.format(d1).substring(11,13);
+        String mm=format.format(d1).substring(14,16);
+        int hhmm = Integer.parseInt(hh+mm);
+        Log.e("miaoxiaoming", "String="+hh+mm+" int="+hhmm);
+        if (hhmm>2230||hhmm<800)
+            return true;
+        else
+            return false;
+    }
+
+    private boolean blockGameTime(String mComponent){
+        long time=System.currentTimeMillis();//long now = android.os.SystemClock.uptimeMillis();
+        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss E");
+        Date d1=new Date(time);
+        String hh=format.format(d1).substring(11,13);
+        String mm=format.format(d1).substring(14,16);
+        String week = format.format(d1).substring(20,23);
+        int hhmm = Integer.parseInt(hh+mm);
+        if (mComponent.indexOf("com.tencent.tmgp.sgame")!=-1)
+        {
+        //Log.e("miaoxiaoming", "String="+hh+mm+" int="+hhmm);
+            if ((!week.equals("Sun"))&&(hhmm>1830||hhmm<1800)||(week.equals("Sun")&&(hhmm>2200||hhmm<1200)))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean isWhiteListApp(String mComponent)
+    {
+        Log.d("danny.fn","mComponent="+mComponent);
+        if ((mComponent.indexOf("com.android")!=-1)||
+            (mComponent.indexOf("com.tencent.mm")!=-1)||
+            (mComponent.indexOf("com.gotokeep.keep")!=-1)||
+            (mComponent.indexOf("cyanogenmod")!=-1)||
+            (mComponent.indexOf("qualcomm")!=-1)||
+            (mComponent.indexOf("codeaurora")!=-1)||
+            (mComponent.indexOf("com.process.manager")!=-1)||
+            (mComponent.indexOf("com.zlp.heyzhima")!=-1)||
+            (mComponent.indexOf("com.autonavi.minimap")!=-1)||
+            (mComponent.indexOf("com.eg.android.AlipayGphone")!=-1)||
+            (mComponent.indexOf("com.sdu.didi.psnger")!=-1)||
+            (mComponent.indexOf("com.tencent.edu")!=-1)||
+            (mComponent.indexOf("com.jiongji.andriod.card")!=-1)||
+            (mComponent.indexOf("com.liulishuo.engzo")!=-1)||
+            (mComponent.indexOf("com.mobike.mobikeapp")!=-1)||
+            (mComponent.indexOf("com.netease.edu.study")!=-1)||
+            (mComponent.indexOf("com.tencent.androidqqmail")!=-1)||
+            (mComponent.indexOf("com.maimemo.android.momo")!=-1)||
+            (mComponent.indexOf("com.alibaba.android.rimet")!=-1)||
+            (mComponent.indexOf("com.eusoft.ting.en")!=-1)||
+            (mComponent.indexOf("com.habitrpg.android.habitica")!=-1)||
+            (mComponent.indexOf("com.ichi2.anki")!=-1)||
+            (mComponent.indexOf("com.jianshu.haruki")!=-1)||
+            (mComponent.indexOf("com.youdao.course")!=-1)||
+            (mComponent.indexOf("com.ximalaya.ting.android")!=-1)||
+            (mComponent.indexOf("com.netease.cloudmusic")!=-1)||
+ (mComponent.indexOf("com.huobi.otc")!=-1)||
+ (mComponent.indexOf("pro.huobi")!=-1)||
+ (mComponent.indexOf("com.gateio.gateio")!=-1)||
+ (mComponent.indexOf("com.okinc.okex")!=-1)||
+ (mComponent.indexOf("udk.android.reader")!=-1)||
+(mComponent.indexOf("com.zlp.heyzhima")!=-1)||
+(mComponent.indexOf("com.evernote")!=-1)||
+ (mComponent.indexOf("com.github.ontio.onto")!=-1)||
+ (mComponent.indexOf("one.sea.app")!=-1)||
+(mComponent.indexOf("com.innologica.inoreader")!=-1)||
+(mComponent.indexOf("com.fcoin.exchange")!=-1)||
+(mComponent.indexOf("com.binance.dev")!=-1)||
+(mComponent.indexOf("org.getlantern.lantern")!=-1)||
+(mComponent.indexOf("com.everhomes.android.mybay")!=-1)||
+(mComponent.indexOf("com.tencent.wework")!=-1)||
+(mComponent.indexOf("cmb.pb")!=-1)||
+(mComponent.indexOf("com.iss.shenzhenmetro")!=-1)||
+(mComponent.indexOf("com.innologica.inoreader")!=-1))
+
+
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private boolean isBlackListApp(String mComponent)
+    {
+        Log.d("miaoxiaoming","mComponent="+mComponent);
+        if ((mComponent.indexOf("com.android.gallery3d")!=-1)||
+            (mComponent.indexOf("com.android.documentsui")!=-1)||
+            (mComponent.indexOf("com.tencent.mm.plugin.bottle")!=-1)||
+            (mComponent.indexOf("WebActivity")!=-1)||
+            (mComponent.indexOf("WebView")!=-1)||
+            (mComponent.indexOf("com.tencent.mm.plugin.sns.ui")!=-1)||
+            (mComponent.indexOf("plugin.webview")!=-1))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     /**
      * Called after {@link #onRestoreInstanceState}, {@link #onRestart}, or
      * {@link #onPause}, for your activity to start interacting with the user.
@@ -1249,6 +1360,14 @@ public class Activity extends ContextThemeWrapper
     @CallSuper
     protected void onResume() {
         if (DEBUG_LIFECYCLE) Slog.v(TAG, "onResume " + this);
+        int strictPkg = SystemProperties.getInt("ro.strict.pkg", 1);
+        if ((strictPkg==1)&&mComponent!=null)
+        {
+            Slog.v("danny-debug","mComponent="+mComponent.toString());
+            if (isSleepTime()&&(!isWhiteListApp(mComponent.toString())||isBlackListApp(mComponent.toString())))
+                return;
+        }
+
         getApplication().dispatchActivityResumed(this);
         mActivityTransitionState.onResume(this, isTopOfTask());
         mCalled = true;

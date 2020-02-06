@@ -696,12 +696,17 @@ public class SystemSensorManager extends SensorManager {
                 // the queue waiting to be delivered. Ignore.
                 return;
             }
+
+            if (sensor.getType()==Sensor.TYPE_STEP_COUNTER)
+            {
+                values[0]=values[0]*2;
+                //Log.e("danny-debug", "After TYPE_STEP_COUNTER values[0]="+values[0]);
+            }
             // Copy from the values array.
             System.arraycopy(values, 0, t.values, 0, t.values.length);
             t.timestamp = timestamp;
             t.accuracy = inAccuracy;
             t.sensor = sensor;
-
             // call onAccuracyChanged() only if the value changes
             final int accuracy = mSensorAccuracies.get(handle);
             if ((t.accuracy >= 0) && (accuracy != t.accuracy)) {
